@@ -60,7 +60,7 @@ while ((contactDetailElem = reader.readNext()) != null) {
 
     String personID = parsedID
     String contactDetail = contactDetailElem[3]
-    String phoneType = "fax"
+    String phoneType = "phone"
     // Obtain values
     Log.info("Updating element " + personID + ", " + contactDetail + ", " + phoneType)
 
@@ -70,7 +70,7 @@ while ((contactDetailElem = reader.readNext()) != null) {
         version SOAPVersion.V1_1
 
         header {
-            'wsse:Security'('soapenv:mustUnderstand': "1", 'xmlns:wsse': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd', 'xmlns:wsu': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd') {
+            'wsse:Security'('soap-env:mustUnderstand': "1", 'xmlns:wsse': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd', 'xmlns:wsu': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd') {
                 'wsse:UsernameToken'('wsu:Id': "UsernameToken-4") {
                     'wsse:Username'(username)
                     'wsse:Password'('Type': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText', password)
@@ -82,8 +82,8 @@ while ((contactDetailElem = reader.readNext()) != null) {
 
         body {
             'auc:updatePhone'{
-                'auc:phonetype'(phoneType)
-                'auc:ArrayofContactDetailPair' {
+                'auc:phoneType'(phoneType)
+                'auc:ArrayOfContactDetailPair' {
                     'auc:ContactDetailElem' {
                         'auc:personID'(personID)
                         'auc:contactDetail'(contactDetail)
