@@ -37,7 +37,6 @@ Log.info("Populated fields from properties file")
 wsClient = new SOAPClient(hostname)
 
 CSVReader reader = new CSVReader(new FileReader("numbers.csv"))
-//br = new BufferedReader(new FileReader(csvFile));
 String [] contactDetailElem
 
 while ((contactDetailElem = reader.readNext()) != null) {
@@ -50,18 +49,18 @@ while ((contactDetailElem = reader.readNext()) != null) {
 
         String[] s = rawID.split("!")
         parsedID = s[1]
-        Log.info("Extracted UPI: " + parsedID + " from entry" + rawID)
+        Log.info("Extracted UPI: \"" + parsedID + "\" from entry" + rawID)
 
     } else {
 
-        Log.info("Skipping entry " + rawID + ", No UPI or bad format")
+        Log.info("Skipping entry \"" + rawID + "\", No UPI or bad format")
         continue //Skips over this entry as it is invalid.
 
     }
 
     String personID = parsedID
     String contactDetail = contactDetailElem[3]
-    String phoneType = contactDetailElem[13]
+    String phoneType = "fax"
     // Obtain values
     Log.info("Updating element " + personID + ", " + contactDetail + ", " + phoneType)
 
@@ -69,6 +68,7 @@ while ((contactDetailElem = reader.readNext()) != null) {
     def eprUserDataResponse = wsClient.send(connectTimeout: 5000, readTimeout: 15000) {
         envelopeAttributes "xmlns:auc": "http://www.auckland.ac.nz"
         version SOAPVersion.V1_1
+
         header {
             'wsse:Security'('soapenv:mustUnderstand': "1", 'xmlns:wsse': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd', 'xmlns:wsu': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd') {
                 'wsse:UsernameToken'('wsu:Id': "UsernameToken-4") {
@@ -93,7 +93,7 @@ while ((contactDetailElem = reader.readNext()) != null) {
             }
         }
     }
-    
+
 }
 
 
