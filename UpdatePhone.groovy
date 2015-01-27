@@ -18,7 +18,6 @@ log.info("Loaded properties file")
 
 
 hostname = properties.getProperty('hostname')
-//hostname = "http://localhost:8080/epr"
 username = properties.getProperty('username')
 password = properties.getProperty('password')
 log.info("Populated fields from properties file")
