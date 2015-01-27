@@ -1,42 +1,32 @@
-/**
- * Created by JackWFinlay on 21/01/2015.
- */
-
-
-import jline.internal.Log
-@Grab (group='com.github.groovy-wslite', module='groovy-wslite', version='1.1.0')
-@Grab ('log4j:log4j:1.2.17')
-@Grab (group='net.sf.opencsv', module='opencsv', version='2.3')
-
 import wslite.soap.*
 import au.com.bytecode.opencsv.CSVReader
+import java.util.logging.Logger
+
+Logger log = Logger.getLogger("")
 
 SOAPClient wsClient
 String hostname
 String username
 String password
 
-String csvFile = "numbers.csv"; // Location of file
-String line = "";
-String splitBy = ","; // Element delimiter
-BufferedReader br
+String csvFile = "numbers.csv" // Location of file
 
 Properties properties = new Properties()
 File propsFile = new File('UpdatePhone.properties')
 properties.load(propsFile.newDataInputStream())
-Log.info("Loaded properties file")
+log.info("Loaded properties file")
 
 
 hostname = properties.getProperty('hostname')
 //hostname = "http://localhost:8080/epr"
 username = properties.getProperty('username')
 password = properties.getProperty('password')
-Log.info("Populated fields from properties file")
+log.info("Populated fields from properties file")
 // Assign variables from  properties file
 
 wsClient = new SOAPClient(hostname)
 
-CSVReader reader = new CSVReader(new FileReader("numbers.csv"))
+CSVReader reader = new CSVReader(new FileReader(csvFile))
 String [] contactDetailElem
 
 while ((contactDetailElem = reader.readNext()) != null) {
@@ -49,20 +39,20 @@ while ((contactDetailElem = reader.readNext()) != null) {
 
         String[] s = rawID.split("!")
         parsedID = s[1]
-        Log.info("Extracted UPI: \"" + parsedID + "\" from entry" + rawID)
+        log.info("Extracted UPI: \"" + parsedID + "\" from entry" + rawID)
 
     } else {
 
-        Log.info("Skipping entry \"" + rawID + "\", No UPI or bad format")
+        log.info("Skipping entry \"" + rawID + "\", No UPI or bad format")
         continue //Skips over this entry as it is invalid.
 
     }
 
     String personID = parsedID
     String contactDetail = contactDetailElem[3]
-    String phoneType = "phone"
+    String phoneType = "Campus"
     // Obtain values
-    Log.info("Updating element " + personID + ", " + contactDetail + ", " + phoneType)
+    log.info("Updating element " + personID + ", " + contactDetail + ", " + phoneType)
 
 
     def eprUserDataResponse = wsClient.send(connectTimeout: 5000, readTimeout: 15000) {
@@ -94,8 +84,6 @@ while ((contactDetailElem = reader.readNext()) != null) {
         }
     }
 
+    log.info( (String)eprUserDataResponse)
+
 }
-
-
-
-
