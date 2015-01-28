@@ -15,34 +15,29 @@
 
         Logger log = Logger.getLogger("")
 
-        SOAPClient wsClient
-        String hostname
-        String username
-        String password
-
         Properties properties = new Properties()
         File propsFile = new File('UpdatePhone.properties')
         properties.load(propsFile.newDataInputStream())
+
         log.info("Loaded properties file")
 
-        hostname = properties.getProperty('hostname')
-        username = properties.getProperty('username')
-        password = properties.getProperty('password')
-        log.info("Populated fields from properties file")
-        // Assign variables from  properties file
+        String hostname = properties.getProperty('hostname')
+        String username = properties.getProperty('username')
+        String password = properties.getProperty('password')
 
-        wsClient = new SOAPClient(hostname)
+        log.info("Populated fields from properties file")
+
+        SOAPClient wsClient = new SOAPClient(hostname)
 
         String rawID = "${etl.getParameter('Line Description')}"
-
 
         if (rawID.contains("!")){
 
           String[] s = rawID.split("!")
-          String parsedID = s[1]
-          log.info("Extracted UPI: \"" + parsedID + "\" from entry" + rawID)
+          String personID = s[1]
 
-          String personID = parsedID
+          log.info("Extracted UPI: \"" + personID + "\" from entry" + rawID)
+
           String contactDetail = "${etl.getParameter('Line No')}"
           String phoneType = "Campus"
 
