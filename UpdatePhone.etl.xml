@@ -1,8 +1,5 @@
 <!DOCTYPE etl SYSTEM "http://scriptella.javaforge.com/dtd/etl.dtd">
 <etl>
-  <properties>
-    <include href="UpdatePhone.properties" />
-  </properties>
   <connection id="numbers" driver="csv" url="numbers.csv"/>
   <connection id="groovy" driver="script">language=groovy</connection>
 
@@ -44,6 +41,7 @@
           log.info("Updating element " + personID + ", " + contactDetail + ", " + phoneType)
 
           def eprUserDataResponse = wsClient.send(connectTimeout: 5000, readTimeout: 15000) {
+
             envelopeAttributes "xmlns:auc": "http://www.auckland.ac.nz"
             version SOAPVersion.V1_1
 
@@ -73,6 +71,7 @@
           }
 
           log.info( (String)eprUserDataResponse)
+
         } else {
           log.info("Skipping entry \"" + rawID + "\", No UPI or bad format")
 
