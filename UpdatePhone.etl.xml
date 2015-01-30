@@ -6,23 +6,23 @@
     <query connection-id="numbers">
       <!--Empty query means select all-->
       <script connection-id="groovy">
-
+        import org.slf4j.Logger
+        import org.slf4j.LoggerFactory
         import wslite.soap.*
-        import java.util.logging.Logger
 
-        Logger log = Logger.getLogger("")
+        Logger logger = LoggerFactory.getLogger("UpdatePhone");
 
         Properties properties = new Properties()
         File propsFile = new File('UpdatePhone.properties')
         properties.load(propsFile.newDataInputStream())
 
-        log.info("Loaded properties file")
+        logger.debug("Loaded properties file")
 
         String hostname = properties.getProperty('hostname')
         String username = properties.getProperty('username')
         String password = properties.getProperty('password')
 
-        log.info("Populated fields from properties file")
+        logger.debug("Populated fields from properties file")
 
         SOAPClient wsClient = new SOAPClient(hostname)
 
@@ -33,12 +33,13 @@
           String[] s = rawID.split("!")
           String personID = s[1]
 
-          log.info("Extracted UPI: \"" + personID + "\" from entry" + rawID)
+          logger.debug("Extracted UPI: \"" + personID + "\" from entry" + rawID)
 
           String contactDetail = "${etl.getParameter('Line No')}"
           String phoneType = "Campus"
 
-          log.info("Updating element " + personID + ", " + contactDetail + ", " + phoneType)
+          logger.info("Updating element " + personID +
+                      ", " + contactDetail + ", " + phoneType)
 
           def eprUserDataResponse = wsClient.send(connectTimeout: 5000, readTimeout: 15000) {
 
@@ -70,10 +71,21 @@
 
           }
 
-          log.info( (String)eprUserDataResponse)
+
+          if (((String) eprUserDataResponse).contains("statusCode=200")) {
+            // Check for if update was successful
+
+            logger.debug("Update of record " + personID + "succeeded.")
+          } else {
+
+            logger.error("Update of record " + rawID +
+                        "failed.\n" + ((String) eprUserDataResponse))
+          }
+
 
         } else {
-          log.info("Skipping entry \"" + rawID + "\", No UPI or bad format")
+
+          logger.warn("Skipping entry \"" + rawID + "\", No UPI or bad format")
 
         }
 

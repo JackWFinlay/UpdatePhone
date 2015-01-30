@@ -1,42 +1,43 @@
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import wslite.soap.*
 import au.com.bytecode.opencsv.CSVReader
-import java.util.logging.Logger
 
-Logger log = Logger.getLogger("")
+Logger logger = LoggerFactory.getLogger("UpdatePhone");
 
 Properties properties = new Properties()
 File propsFile = new File('UpdatePhone.properties')
 properties.load(propsFile.newDataInputStream())
-log.info("Loaded properties file")
+logger.debug("Loaded properties file")
 
 String hostname = properties.getProperty('hostname')
 String username = properties.getProperty('username')
 String password = properties.getProperty('password')
-String csvFile  = properties.getProperty('CSVFile')
+String csvFile = properties.getProperty('CSVFile')
 
-log.info("Populated fields from properties file")
+logger.debug("Populated fields from properties file")
 // Assign variables from  properties file
 
 SOAPClient wsClient = new SOAPClient(hostname)
 
 CSVReader reader = new CSVReader(new FileReader(csvFile))
-String [] contactDetailElem
+String[] contactDetailElem
 
 while ((contactDetailElem = reader.readNext()) != null) {
     // Until no more elements
 
     String rawID = contactDetailElem[4]
 
-    if (rawID.contains("!")){
+    if (rawID.contains("!")) {
 
         String[] s = rawID.split("!")
         String personID = s[1]
-        log.info("Extracted UPI: \"" + personID + "\" from entry" + rawID)
+        logger.debug("Extracted UPI: \"" + personID + "\" from entry" + rawID)
 
         String contactDetail = contactDetailElem[3]
         String phoneType = "Campus"
         // Obtain values
-        log.info("Updating element " + personID + ", " + contactDetail + ", " + phoneType)
+        logger.info("Updating element " + personID + ", " + contactDetail + ", " + phoneType)
 
 
         def eprUserDataResponse = wsClient.send(connectTimeout: 5000, readTimeout: 15000) {
@@ -55,7 +56,7 @@ while ((contactDetailElem = reader.readNext()) != null) {
             }
 
             body {
-                'auc:updatePhone'{
+                'auc:updatePhone' {
                     'auc:phoneType'(phoneType)
                     'auc:ArrayOfContactDetailPair' {
                         'auc:ContactDetailElem' {
@@ -68,12 +69,21 @@ while ((contactDetailElem = reader.readNext()) != null) {
             }
         }
 
-        log.info( (String)eprUserDataResponse )
+        if ((String) eprUserDataResponse.contains("statusCode=200")) {
 
+            logger.info((String) eprUserDataResponse)
         } else {
 
-          log.info("Skipping entry \"" + rawID + "\", No UPI or bad format")
-
+            logger.error(logger.info("Update of record " + personID + "failed.\n" + ((String) eprUserDataResponse)))
         }
 
+
+    } else {
+
+        logger.warn("Skipping entry \"" + rawID + "\", No UPI or bad format")
+
+    }
+
 }
+
+
