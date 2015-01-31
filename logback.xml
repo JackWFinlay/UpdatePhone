@@ -20,12 +20,7 @@
         </encoder>
     </appender>
 
-    <logger name="UpdatePhone" additivity="false" level="warn">
-        <appender-ref ref="consoleAppender"/>
-        <appender-ref ref="fileAppender"/>
-    </logger>
-
-    <root level="info">
+    <root level="warn">
         <appender-ref ref="consoleAppender"/>
         <appender-ref ref="fileAppender" />
     </root>

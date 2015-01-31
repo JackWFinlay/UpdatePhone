@@ -8,15 +8,16 @@ Logger logger = LoggerFactory.getLogger("UpdatePhone");
 Properties properties = new Properties()
 File propsFile = new File('UpdatePhone.properties')
 properties.load(propsFile.newDataInputStream())
+
 logger.debug("Loaded properties file")
 
 String hostname = properties.getProperty('hostname')
 String username = properties.getProperty('username')
 String password = properties.getProperty('password')
 String csvFile = properties.getProperty('CSVFile')
+// Assign variables from  properties file
 
 logger.debug("Populated fields from properties file")
-// Assign variables from  properties file
 
 SOAPClient wsClient = new SOAPClient(hostname)
 
@@ -28,7 +29,7 @@ while ((contactDetailElem = reader.readNext()) != null) {
 
     String rawID = contactDetailElem[4]
 
-    if (rawID.contains("!")) {
+    if (rawID.contains("!")) { // Viable line description
 
         String[] s = rawID.split("!")
         String personID = s[1]
@@ -37,7 +38,7 @@ while ((contactDetailElem = reader.readNext()) != null) {
         String contactDetail = contactDetailElem[3]
         String phoneType = "Campus"
         // Obtain values
-        logger.info("Updating element " + personID + ", " + contactDetail + ", " + phoneType)
+        logger.debug("Updating element " + personID + ", " + contactDetail + ", " + phoneType)
 
 
         def eprUserDataResponse = wsClient.send(connectTimeout: 5000, readTimeout: 15000) {
@@ -69,18 +70,18 @@ while ((contactDetailElem = reader.readNext()) != null) {
             }
         }
 
-        if ((String) eprUserDataResponse.contains("statusCode=200")) {
+        if (((String)eprUserDataResponse).contains("statusCode=200")) {
 
-            logger.info((String) eprUserDataResponse)
+            logger.debug((String) eprUserDataResponse)
         } else {
 
             logger.error(logger.info("Update of record " + personID + "failed.\n" + ((String) eprUserDataResponse)))
         }
 
 
-    } else {
+    } else { // Incompatible line description
 
-        logger.warn("Skipping entry \"" + rawID + "\", No UPI or bad format")
+        logger.info("Skipping entry \"" + rawID + "\", No UPI or bad format")
 
     }
 

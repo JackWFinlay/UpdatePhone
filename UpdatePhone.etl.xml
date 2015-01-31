@@ -85,7 +85,7 @@
 
         } else {
 
-          logger.warn("Skipping entry \"" + rawID + "\", No UPI or bad format")
+          logger.info("Skipping entry \"" + rawID + "\", No UPI or bad format")
 
         }
 
