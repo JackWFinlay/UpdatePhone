@@ -75,7 +75,7 @@
           if (((String) eprUserDataResponse).contains("statusCode=200")) {
             // Check for if update was successful
 
-            logger.info("Update of record " + personID + "succeeded.")
+            logger.info("Update of record " + personID + " succeeded.")
           } else {
 
             logger.error("Update of record " + rawID +

@@ -72,7 +72,7 @@ while ((contactDetailElem = reader.readNext()) != null) {
 
         if (((String)eprUserDataResponse).contains("statusCode=200")) {
 
-            logger.debug((String) eprUserDataResponse)
+            logger.info("Update of record " + personID + " succeeded.")
         } else {
 
             logger.error(logger.info("Update of record " + personID + "failed.\n" + ((String) eprUserDataResponse)))
