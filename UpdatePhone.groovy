@@ -38,46 +38,51 @@ while ((contactDetailElem = reader.readNext()) != null) {
         String contactDetail = contactDetailElem[3]
         String phoneType = "Campus"
         // Obtain values
-        logger.debug("Updating element " + personID + ", " + contactDetail + ", " + phoneType)
+        logger.info("Updating element personID: " + personID + ", contactDetail: " + contactDetail + ", phoneType: " + phoneType)
 
+        try {
 
-        def eprUserDataResponse = wsClient.send(connectTimeout: 5000, readTimeout: 15000) {
-            envelopeAttributes "xmlns:auc": "http://www.auckland.ac.nz"
-            version SOAPVersion.V1_1
+            def eprUserDataResponse = wsClient.send(connectTimeout: 5000, readTimeout: 15000) {
+                envelopeAttributes "xmlns:auc": "http://www.auckland.ac.nz"
+                version SOAPVersion.V1_1
 
-            header {
-                'wsse:Security'('soap-env:mustUnderstand': "1", 'xmlns:wsse': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd', 'xmlns:wsu': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd') {
-                    'wsse:UsernameToken'('wsu:Id': "UsernameToken-4") {
-                        'wsse:Username'(username)
-                        'wsse:Password'('Type': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText', password)
-                        'wsse:Nonce'('EncodingType': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary', new String(password.bytes.encodeBase64().toString()))
-                        'wsu:Created'(new Date().format("yyyy-MM-dd'T'HH:mm:ss SSS"))
-                    }
-                }
-            }
-
-            body {
-                'auc:updatePhone' {
-                    'auc:phoneType'(phoneType)
-                    'auc:ArrayOfContactDetailPair' {
-                        'auc:ContactDetailElem' {
-                            'auc:personID'(personID)
-                            'auc:contactDetail'(contactDetail)
+                header {
+                    'wsse:Security'('soap-env:mustUnderstand': "1", 'xmlns:wsse': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd', 'xmlns:wsu': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd') {
+                        'wsse:UsernameToken'('wsu:Id': "UsernameToken-4") {
+                            'wsse:Username'(username)
+                            'wsse:Password'('Type': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText', password)
+                            'wsse:Nonce'('EncodingType': 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary', new String(password.bytes.encodeBase64().toString()))
+                            'wsu:Created'(new Date().format("yyyy-MM-dd'T'HH:mm:ss SSS"))
                         }
                     }
+                }
 
+                body {
+                    'auc:updatePhone' {
+                        'auc:phoneType'(phoneType)
+                        'auc:ArrayOfContactDetailPair' {
+                            'auc:ContactDetailElem' {
+                                'auc:personID'(personID)
+                                'auc:contactDetail'(contactDetail)
+                            }
+                        }
+
+                    }
                 }
             }
+
+            if (((String) eprUserDataResponse).contains("statusCode=200")) {
+
+                logger.info("Update of record " + personID + " succeeded.")
+            } else {
+
+                logger.error(logger.info("Update of record " + personID + "failed.\n" + ((String) eprUserDataResponse)))
+            }
+
+        } catch (wslite.soap.SOAPClientException e){
+
+            logger.error("Error occurred: {}", e)
         }
-
-        if (((String)eprUserDataResponse).contains("statusCode=200")) {
-
-            logger.info("Update of record " + personID + " succeeded.")
-        } else {
-
-            logger.error(logger.info("Update of record " + personID + "failed.\n" + ((String) eprUserDataResponse)))
-        }
-
 
     } else { // Incompatible line description
 
