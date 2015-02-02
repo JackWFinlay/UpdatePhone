@@ -83,9 +83,9 @@ while ((contactDetailElem = reader.readNext()) != null) {
                 logger.error("Update of record {} failed.\n{}", personID,  ((String) eprUserDataResponse))
             }
 
-        } catch (wslite.soap.SOAPClientException e) {
+        } catch (Exception e) {
 
-            logger.error("Error occurred: {}", e)
+            logger.error("Error occurred: {}", e.message, e)
             throw e
         }
     }

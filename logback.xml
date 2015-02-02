@@ -21,17 +21,17 @@
         </encoder>
     </appender>
 
-    <appender name="PAPERTRAIL" class="ch.qos.logback.classic.net.SyslogAppender">
+    <appender name="paperTrail" class="ch.qos.logback.classic.net.SyslogAppender">
         <syslogHost>logs2.papertrailapp.com</syslogHost>
         <port>29685</port>
         <facility>USER</facility>
         <suffixPattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n</suffixPattern>
     </appender>
 
-    <root level="debug">
+    <root level="info">
         <appender-ref ref="consoleAppender"/>
         <appender-ref ref="fileAppender"/>
-        <appender-ref ref="PAPERTRAIL"/>
+        <appender-ref ref="paperTrail"/>
     </root>
 
 </configuration>

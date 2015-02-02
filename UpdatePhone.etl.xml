@@ -38,7 +38,7 @@
           String[] s = rawID.split("!")
           String personID = s[1]
 
-          logger.debug("Extracted UPI: \"{}\" from entry{}", personID,rawID)
+          logger.debug("Extracted UPI: \"{}\" from entry {}", personID,rawID)
 
           String contactDetail = "${etl.getParameter('Line No')}"
           String phoneType = "Campus"
@@ -88,9 +88,9 @@
                       personID,  ((String) eprUserDataResponse))
             }
 
-          } catch (wslite.soap.SOAPClientException e){
+          } catch (Exception e){
 
-            logger.error("Error occurred: {}", e)
+            logger.error("Error occurred: {}", e.message, e)
             throw e
           }
 
