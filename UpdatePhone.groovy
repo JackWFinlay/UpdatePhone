@@ -29,16 +29,20 @@ while ((contactDetailElem = reader.readNext()) != null) {
 
     String rawID = contactDetailElem[4]
 
-    if (rawID.contains("!")) { // Viable line description
+    if (!rawID.contains("!")) { // Viable line description
+
+        logger.info("Skipping entry \"{}\", No UPI or bad format", rawID)
+
+    } else { // Incompatible line description
 
         String[] s = rawID.split("!")
         String personID = s[1]
-        logger.debug("Extracted UPI: \"" + personID + "\" from entry" + rawID)
+        logger.debug("Extracted UPI: \"{}\" from entry {}", personID,rawID)
 
         String contactDetail = contactDetailElem[3]
         String phoneType = "Campus"
         // Obtain values
-        logger.info("Updating element personID: " + personID + ", contactDetail: " + contactDetail + ", phoneType: " + phoneType)
+        logger.info("Updating element personID: {}, contactDetail: {}, phoneType: {}", personID, contactDetail, phoneType)
 
         try {
 
@@ -71,23 +75,19 @@ while ((contactDetailElem = reader.readNext()) != null) {
                 }
             }
 
-            if (((String) eprUserDataResponse).contains("statusCode=200")) {
+            if (eprUserDataResponse.httpResponse.statusCode == 200) {
 
-                logger.info("Update of record " + personID + " succeeded.")
+                logger.info("Update of record {} succeeded." , personID)
             } else {
 
-                logger.error(logger.info("Update of record " + personID + "failed.\n" + ((String) eprUserDataResponse)))
+                logger.error("Update of record {} failed.\n{}", personID,  ((String) eprUserDataResponse))
             }
 
-        } catch (wslite.soap.SOAPClientException e){
+        } catch (wslite.soap.SOAPClientException e) {
 
             logger.error("Error occurred: {}", e)
+            throw e
         }
-
-    } else { // Incompatible line description
-
-        logger.info("Skipping entry \"" + rawID + "\", No UPI or bad format")
-
     }
 
 }

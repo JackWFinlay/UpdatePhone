@@ -28,7 +28,7 @@
         <suffixPattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n</suffixPattern>
     </appender>
 
-    <root level="info">
+    <root level="debug">
         <appender-ref ref="consoleAppender"/>
         <appender-ref ref="fileAppender"/>
         <appender-ref ref="PAPERTRAIL"/>
